@@ -15,8 +15,6 @@ dalvik.vm.dex2oat-minidebuginfo=false
 dalvik.vm.minidebuginfo=false
 
 # Audio
-ro.config.vc_call_vol_steps=7
-ro.config.media_vol_steps=15
 af.fast_track_multiplier=1
 audio.chk.cal.us=0
 audio.deep_buffer.media=true
@@ -79,8 +77,6 @@ persist.vendor.camera.display.lmax=1280x720
 persist.vendor.camera.display.umax=1920x1080
 persist.vendor.camera.privapp.list=org.codeaurora.snapcam
 persist.vendor.camera.stats.test=5
-persist.vendor.camera.eis.enable=1
-persist.camera.facepp.fdenable=0
 vendor.camera.aux.packagelist1=com.huaqin.cameraautotest,com.xiaomi.cameratools,com.android.camera
 vendor.camera.aux.packagelist2=com.mi.AutoTest
 vendor.camera.aux.packagelist=org.codeaurora.snapcam,com.qualcomm.qti.qmmi,com.huaqin.factory,com.westalgo.calibration
@@ -166,6 +162,7 @@ vendor.vidc.disable.split.mode=1
 vendor.vidc.enc.disable.pq=true
 vendor.vidc.enc.disable_bframes=1
 vendor.video.disable.ubwc=1
+vendor.display.disable_rotator_downscale=0
 
 # Memory optimizations
 ro.vendor.qti.sys.fw.bservice_enable=true
