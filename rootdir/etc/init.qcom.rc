@@ -37,6 +37,13 @@ on early-init
     chmod 0620 /dev/kmsg
 
 on init
+    # Disable UFS powersaving
+    write /sys/devices/soc/${ro.boot.bootdevice}/clkscale_enable 0
+    write /sys/devices/soc/${ro.boot.bootdevice}/clkgate_enable 0
+    write /sys/devices/soc/${ro.boot.bootdevice}/hibern8_on_idle_enable 0
+    write /sys/module/lpm_levels/parameters/sleep_disabled Y
+    #Disable EAS during boot
+    write /sys/kernel/debug/sched_features NO_ENERGY_AWARE
     # Create cgroup mount point for memory
     mkdir /sys/fs/cgroup/memory/bg 0750 root system
     write /sys/fs/cgroup/memory/bg/memory.swappiness 140
@@ -379,7 +386,10 @@ on post-fs-data
     write /sys/block/dm-0/queue/read_ahead_kb 2048
     write /sys/block/dm-1/queue/read_ahead_kb 2048
     write /sys/block/dm-2/queue/read_ahead_kb 2048
-
+    write /sys/block/sda/queue/iostats 0
+    write /sys/block/sda/queue/iosched/slice_idle 0
+    write /sys/block/sda/queue/read_ahead_kb 2048
+    write /sys/block/sda/queue/nr_requests 512
     #Create dir for TUI
     mkdir /data/vendor/tui 0700 system system
 
@@ -392,6 +402,33 @@ on property:sys.boot_completed=1
     #Reset read ahead for dm-0 and dm-1 to 512kb
     write /sys/block/dm-0/queue/read_ahead_kb 512
     write /sys/block/dm-1/queue/read_ahead_kb 512
+    # LMK Tweaks
+    chmod 666 /sys/module/lowmemorykiller/parameters/minfree
+    chown root /sys/module/lowmemorykiller/parameters/minfree
+    write /sys/module/lowmemorykiller/parameters/minfree 9374,14061,18748,23435,28122,32809
+    chmod 666 /sys/module/lowmemorykiller/parameters/cost
+    chown root /sys/module/lowmemorykiller/parameters/cost
+    write /sys/module/lowmemorykiller/parameters/cost 32
+    chmod 666 /sys/module/lowmemorykiller/parameters/vmpressure_file_min
+    chown root /sys/module/lowmemorykiller/parameters/vmpressure_file_min
+    write /sys/module/lowmemorykiller/parameters/vmpressure_file_min 81250
+    # High Performance DAC
+    write /sys/module/wcd9335_dlkm/parameters/cpe_debug_mode 1
+    # Low Distort AMP
+    write /sys/module/wcd9335_dlkm/parameters/low_distort_amp 1
+    # Input boost
+    write /sys/module/cpu_boost/parameters/input_boost_ms 500
+    # Image Enhancement
+    write /sys/devices/virtual/graphics/fb0/msm_fb_dispparam 0010
+    # Read ahead
+    #Re-enable EAS after boot
+    write /sys/kernel/debug/sched_features ENERGY_AWARE
+    # Enable UFS powersaving
+    write /sys/devices/soc/${ro.boot.bootdevice}/clkscale_enable 1
+    write /sys/devices/soc/${ro.boot.bootdevice}/clkgate_enable 1
+    write /sys/devices/soc/${ro.boot.bootdevice}/hibern8_on_idle_enable 1
+    write /sys/module/lpm_levels/parameters/sleep_disabled N
+    write /sys/block/sda/queue/read_ahead_kb 2048
     #WDSP FW boot sysfs node used by STHAL
     chown media audio /sys/kernel/wdsp0/boot
     chown media audio /sys/kernel/wcd_cpe0/fw_name
@@ -519,6 +556,12 @@ service vendor.msm_irqbalance /vendor/bin/msm_irqbalance -f /system/vendor/etc/m
 on charger
     setprop persist.sys.usb.config mass_storage
     start qcom-post-boot
+    # Enable UFS powersaving
+    write /sys/devices/soc/${ro.boot.bootdevice}/clkscale_enable 1
+    write /sys/devices/soc/${ro.boot.bootdevice}/clkgate_enable 1
+    write /sys/devices/soc/${ro.boot.bootdevice}/hibern8_on_idle_enable 1
+    write /sys/class/typec/port0/port_type sink
+    write /sys/module/lpm_levels/parameters/sleep_disabled N    
 
 service vendor.power_off_alarm /vendor/bin/power_off_alarm
     class core
