@@ -126,9 +126,6 @@ DEVICE_MATRIX_FILE := $(COMMON_PATH)/compatibility_matrix.xml
 # HW crypto
 TARGET_HW_DISK_ENCRYPTION := true
 
-# ANX Camera
--include vendor/xiaomi/miuicamera/BoardConfigAnx.mk
-
 # HWUI
 HWUI_COMPILE_FOR_PERF := true
 
